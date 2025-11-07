@@ -8,7 +8,6 @@ Include Macros.inc
 GetStdHandle	PROTO	:QWORD
 ReadConsoleW	PROTO	:QWORD,	:QWORD, :QWORD, :QWORD, :QWORD
 WriteConsoleW	PROTO	:QWORD,	:QWORD, :QWORD, :QWORD, :QWORD
-ExitProcess		PROTO	CodigoSalida:QWORD
 
 				.DATA
 ; Definir las variables E, X, Y y Z, así como los mensajes de entrada correspondientes y el mensaje de salida
@@ -47,13 +46,19 @@ Principal			PROC
 				LEA		RDX, MenEnt01				; Dirección de la cadena a escribir
 				MOV		R8, LENGTHOF MenEnt01			; Número de caracteres a escribir
 				LEA		R9, Caracteres				; Dirección de la variable donde se guarda el total de caracteres escrito
-				CALL		WriteConsoleW
+				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
+				CALL	WriteConsoleW
+				POP		R10
 
 				MOV		RCX, ManejadorE				; Manejador del teclado donde se lee la cadena
 				LEA		RDX, Texto				; Dirección de la cadena a leer
 				MOV		R8, LENGTHOF Texto			; Número de caracteres máximo a leer
 				LEA		R9, Caracteres				; Dirección de la variable donde se guarda el total de caracteres leídos
-				CALL		ReadConsoleW
+				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
+				CALL	ReadConsoleW
+				POP		R10
 				MacroCadenaAEntero	Texto, X
 
 				; Solicitar la variable Y
@@ -71,7 +76,10 @@ Principal			PROC
 				LEA		RDX, MenSal01				; Dirección de la cadena a escribir
 				MOV		R8, LENGTHOF MenSal01			; Número de caracteres a escribir
 				LEA		R9, Caracteres				; Dirección de la variable donde se guarda el total de caracteres escrito
-				CALL		WriteConsoleW
+				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
+				CALL	WriteConsoleW
+				POP		R10
 
 				; Convertir E a cadena
 				MacroEnteroACadena	E, Texto, Caracteres
@@ -83,11 +91,16 @@ Principal			PROC
 				LEA		RDX, SaltoLinea				; Dirección de la cadena a escribir
 				MOV		R8, LENGTHOF SaltoLinea			; Número de caracteres a escribir
 				LEA		R9, Caracteres				; Dirección de la variable donde se guarda el total de caracteres escrito
-				CALL		WriteConsoleW
+				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
+				CALL	WriteConsoleW
+				POP		R10
 
-				; Salir al sistema operativo
-				MOV		RCX, 0
-				CALL		ExitProcess
+				; Recuperar el espacio de la pila
+				ADD		RSP, 40
 
+				; Salir al S. O
+				MOV		RAX, 0					; Código de salida 0
+				RET								; Retornar al sistema operativo
 Principal			ENDP
 				END
